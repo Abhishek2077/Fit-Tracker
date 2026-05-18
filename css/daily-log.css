@@ -1,0 +1,282 @@
+/* Daily Log Page CSS */
+.log-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.log-tab {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.log-tab.active {
+  background: var(--accent);
+  color: #0a0a0a;
+  border-color: var(--accent);
+}
+
+.log-panel { display: none; }
+.log-panel.active { display: block; }
+
+/* Food Input */
+.food-input-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.food-textarea {
+  width: 100%;
+  min-height: 80px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  box-shadow: inset 2px 2px 6px var(--neu-inset-dark), inset -2px -2px 6px var(--neu-inset-light);
+}
+
+.food-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.food-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* Analysis Result */
+.analysis-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: fadeInUp 0.4s ease;
+}
+
+.analysis-card.cheat-alert {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), var(--bg-card));
+}
+
+.analysis-macros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.macro-item {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+}
+
+.macro-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.macro-label {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Rating */
+.meal-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+  margin-top: 12px;
+}
+
+.rating-score {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+/* Photo Upload */
+.photo-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 16px;
+}
+
+.photo-upload-area:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.photo-upload-area .photo-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+/* Daily Tracking */
+.tracking-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.tracking-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.tracking-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.tracking-label .tl-icon { font-size: 1.2rem; }
+
+/* Water Counter */
+.water-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.water-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.water-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.water-count {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Mood Selector */
+.mood-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.mood-option {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.8rem;
+}
+
+.mood-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* Cheat Meal Section */
+.cheat-section {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), var(--bg-card));
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+/* Loading Spinner */
+.analyzing-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 30px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Meal History */
+.meal-history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.meal-history-item.cheat {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mhi-info { flex: 1; }
+.mhi-name { font-weight: 600; font-size: 0.85rem; }
+.mhi-macros { font-size: 0.72rem; color: var(--text-secondary); }
+.mhi-cal { font-family: 'Outfit'; font-weight: 700; font-size: 1rem; }
+
+@media (min-width: 768px) {
+  .analysis-macros { grid-template-columns: repeat(6, 1fr); }
+}

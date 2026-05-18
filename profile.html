@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="manifest" href="manifest.json">
+  <title>Profile - FitTracker AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="heading-lg">👤 Profile</h1>
+    <a href="dashboard.html" class="btn btn-ghost btn-sm">← Back</a>
+  </header>
+
+  <main class="page-content">
+    <!-- Profile Card -->
+    <div class="profile-header" data-animate>
+      <div class="profile-avatar"><span id="profile-avatar-letter">U</span></div>
+      <div class="profile-name" id="profile-name">User</div>
+      <div class="profile-goal-badge" id="profile-goal">—</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="profile-stats-row" data-animate>
+      <div class="profile-stat"><div class="ps-value" id="ps-weight">—</div><div class="ps-label">Weight</div></div>
+      <div class="profile-stat"><div class="ps-value" id="ps-target">—</div><div class="ps-label">Target</div></div>
+      <div class="profile-stat"><div class="ps-value" id="ps-height">—</div><div class="ps-label">Height</div></div>
+      <div class="profile-stat"><div class="ps-value" id="ps-bmi">—</div><div class="ps-label">BMI</div></div>
+    </div>
+
+    <!-- Calendar -->
+    <section class="neu-card" style="margin-bottom:20px" data-animate>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 class="heading-md">📅 Calendar</h3>
+        <span class="text-sm text-accent" id="cal-month"></span>
+      </div>
+      <div class="text-xs text-muted" style="margin-bottom:10px">✔ Gym done  ⚠ Cheat meal</div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </section>
+
+    <!-- Body Prediction -->
+    <section class="prediction-card" data-animate>
+      <h3 class="heading-md" style="margin-bottom:4px;position:relative">🔮 Body Prediction</h3>
+      <p class="text-xs text-muted" style="margin-bottom:16px;position:relative">AI estimates based on your data</p>
+      <div id="prediction-result" style="position:relative">
+        <button class="btn btn-primary" onclick="loadPrediction()" id="btn-predict">Generate Prediction</button>
+      </div>
+    </section>
+
+    <!-- Expense Tracker -->
+    <section class="neu-card" style="margin-bottom:20px" data-animate>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 class="heading-md">💰 Fitness Expenses</h3>
+        <span class="heading-md text-accent" id="expense-total">₹0</span>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <input type="text" class="neu-input" id="expense-desc" placeholder="What for?" style="flex:2;min-width:120px">
+        <input type="number" class="neu-input" id="expense-amount" placeholder="₹" style="flex:1;min-width:80px">
+        <select class="neu-input" id="expense-category" style="flex:1;min-width:100px">
+          <option value="gym">🏋️ Gym</option>
+          <option value="chicken">🍗 Chicken</option>
+          <option value="whey">🥛 Whey</option>
+          <option value="supplements">💊 Supplements</option>
+          <option value="other">📦 Other</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addExpense()" id="btn-add-expense">Add</button>
+      </div>
+
+      <div id="expense-list"></div>
+    </section>
+
+    <!-- Edit Profile -->
+    <section class="profile-edit-form" data-animate>
+      <h3 class="heading-md" style="margin-bottom:16px">✏️ Edit Profile</h3>
+
+      <div class="form-group"><label>Name</label><input type="text" class="neu-input" id="edit-name"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Age</label><input type="number" class="neu-input" id="edit-age"></div>
+        <div class="form-group"><label>Height (cm)</label><input type="number" class="neu-input" id="edit-height"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Weight (kg)</label><input type="number" class="neu-input" id="edit-weight" step="0.1"></div>
+        <div class="form-group"><label>Target (kg)</label><input type="number" class="neu-input" id="edit-target" step="0.1"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Protein Goal (g)</label><input type="number" class="neu-input" id="edit-protein"></div>
+        <div class="form-group"><label>Calorie Goal</label><input type="number" class="neu-input" id="edit-calories"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Goal Type</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="goal-option" data-goal="fat-loss" onclick="selectGoal(this)">🔥 Fat Loss</div>
+          <div class="goal-option" data-goal="muscle-gain" onclick="selectGoal(this)">💪 Muscle Gain</div>
+          <div class="goal-option" data-goal="bulk" onclick="selectGoal(this)">🍖 Bulk</div>
+          <div class="goal-option" data-goal="cut" onclick="selectGoal(this)">✂️ Cut</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="updateProfile()" style="width:100%;margin-top:8px" id="btn-save-profile">
+        💾 Save Changes
+      </button>
+    </section>
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

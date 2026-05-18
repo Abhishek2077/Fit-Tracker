@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="manifest" href="manifest.json">
+  <title>Settings - FitTracker AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="heading-lg">⚙️ Settings</h1>
+    <a href="dashboard.html" class="btn btn-ghost btn-sm">← Back</a>
+  </header>
+
+  <main class="page-content">
+    <!-- Appearance -->
+    <section class="settings-section" data-animate>
+      <h3>🎨 Appearance</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Dark Mode</div>
+          <div class="setting-desc">Toggle dark/light theme</div>
+        </div>
+        <div class="toggle" id="toggle-theme" onclick="toggleThemeSetting()"></div>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="settings-section" data-animate>
+      <h3>🔔 Notifications</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Smart Reminders</div>
+          <div class="setting-desc">Protein, water, creatine, sleep reminders</div>
+        </div>
+        <div class="toggle" id="toggle-reminders" onclick="toggleReminders()"></div>
+      </div>
+    </section>
+
+    <!-- AI Settings -->
+    <section class="settings-section" data-animate>
+      <h3>🤖 AI Configuration</h3>
+      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="setting-name">Gemini API Key</div>
+          <span class="text-xs" id="api-status">❌ Not set</span>
+        </div>
+        <input type="text" class="neu-input" id="api-key-input" readonly style="font-size:0.8rem">
+        <div style="display:flex;gap:8px">
+          <input type="password" class="neu-input" id="api-key-new" placeholder="Paste new API key here" style="flex:1">
+          <button class="btn btn-primary btn-sm" onclick="saveApiKey()" id="btn-save-key">Save</button>
+        </div>
+        <p class="text-xs text-muted">Get a free key from <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent);text-decoration:underline">aistudio.google.com</a></p>
+      </div>
+    </section>
+
+    <!-- Data -->
+    <section class="settings-section" data-animate>
+      <h3>💾 Data & Storage</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Data Summary</div>
+          <div class="setting-desc">
+            <span id="data-meals">0</span> meals •
+            <span id="data-workouts">0</span> workouts •
+            <span id="data-days">0</span> days logged
+          </div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Export Backup</div>
+          <div class="setting-desc">Download all data as JSON</div>
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="exportData()" id="btn-export">📦 Export</button>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Import Backup</div>
+          <div class="setting-desc">Restore from JSON file</div>
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="triggerImport()" id="btn-import">📥 Import</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Export Report PDF</div>
+          <div class="setting-desc">Generate downloadable report</div>
+        </div>
+        <a href="reports.html" class="btn btn-sm btn-secondary">📄 Reports</a>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section class="settings-section" data-animate>
+      <h3>📲 Install App</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Add to Home Screen</div>
+          <div class="setting-desc">Install as a standalone app</div>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="installAppFromSettings()" id="btn-install-app">Install</button>
+      </div>
+    </section>
+
+    <!-- Danger Zone -->
+    <section class="settings-section danger-zone" data-animate>
+      <h3 style="color:var(--danger)">⚠️ Danger Zone</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name" style="color:var(--danger)">Reset All Data</div>
+          <div class="setting-desc">Permanently delete all data. This cannot be undone.</div>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="resetAllData()" id="btn-reset">🗑️ Reset</button>
+      </div>
+    </section>
+
+    <!-- Security Info -->
+    <section class="settings-section" data-animate>
+      <h3>🔒 Privacy & Security</h3>
+      <div class="text-sm text-muted" style="line-height:1.8">
+        ✅ All data stored locally on your device<br>
+        ✅ No cloud storage or external server<br>
+        ✅ No account or sign-up required<br>
+        ✅ Photos are processed then immediately deleted<br>
+        ✅ API key stored only in your browser<br>
+        ✅ Full data export/import at any time
+      </div>
+    </section>
+
+    <div class="app-version">
+      FitTracker AI v1.0.0<br>
+      Made with ❤️ for fitness enthusiasts
+    </div>
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

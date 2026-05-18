@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="FitTracker AI - Your Personal AI Fitness Coach & Nutrition Tracker">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FitTracker">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <title>FitTracker AI - Your AI Fitness Coach</title>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    /* Onboarding specific styles */
+    .onboarding-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .onboarding-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(232, 185, 35, 0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 80%, rgba(232, 185, 35, 0.04) 0%, transparent 50%);
+      animation: bgFloat 20s ease-in-out infinite;
+    }
+
+    @keyframes bgFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(2%, -2%) rotate(1deg); }
+      66% { transform: translate(-1%, 1%) rotate(-1deg); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--accent-glow);
+      border: 1px solid var(--border-accent);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light), #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 340px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 40px;
+    }
+
+    .feature-item {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .feature-item:nth-child(1) { animation-delay: 0.3s; }
+    .feature-item:nth-child(2) { animation-delay: 0.35s; }
+    .feature-item:nth-child(3) { animation-delay: 0.4s; }
+    .feature-item:nth-child(4) { animation-delay: 0.45s; }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .feature-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .cta-group {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeInUp 0.6s ease 0.5s both;
+    }
+
+    .cta-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: var(--radius-lg);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .cta-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #0a0a0a;
+      box-shadow: 0 6px 30px var(--accent-glow-strong);
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px var(--accent-glow-strong);
+    }
+
+    .cta-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .cta-secondary:hover {
+      border-color: var(--accent);
+    }
+
+    .bottom-text {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      animation: fadeIn 1s ease 0.8s both;
+    }
+
+    /* Onboarding form */
+    .onboarding-form {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .onboarding-form.active { display: flex; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .goal-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .goal-option {
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .goal-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    .goal-option:hover {
+      border-color: var(--border-accent);
+    }
+
+    @media (min-width: 768px) {
+      .hero-title { font-size: 4rem; }
+      .hero-subtitle { font-size: 1.1rem; max-width: 500px; }
+      .feature-grid { max-width: 500px; }
+      .cta-group { max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splash">
+    <div class="splash-logo">FitTracker</div>
+    <div class="splash-sub">AI-Powered Fitness Coach</div>
+  </div>
+
+  <!-- Hero / Landing -->
+  <div class="onboarding-container" id="hero-section">
+    <div class="hero-badge">🤖 Powered by Google Gemini AI</div>
+    <h1 class="hero-title">
+      Your <span class="gradient-text">AI Fitness</span> Coach
+    </h1>
+    <p class="hero-subtitle">
+      Track nutrition, workouts, and progress with AI-powered insights. No account needed — your data stays on your device.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🍗</div>
+        <div class="feature-label">Food AI</div>
+        <div class="feature-desc">Instant macro analysis</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💪</div>
+        <div class="feature-label">Workout Log</div>
+        <div class="feature-desc">Track sets & PRs</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-label">Smart Reports</div>
+        <div class="feature-desc">Weekly AI analysis</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-label">Gamification</div>
+        <div class="feature-desc">Streaks & badges</div>
+      </div>
+    </div>
+
+    <div class="cta-group">
+      <button class="cta-btn cta-primary" onclick="showOnboarding()">
+        Get Started →
+      </button>
+      <button class="cta-btn cta-secondary" onclick="window.location.href='dashboard.html'">
+        I already have data
+      </button>
+    </div>
+
+    <p class="bottom-text">
+      🔒 100% private • No cloud • Installable PWA
+    </p>
+  </div>
+
+  <!-- Onboarding Form -->
+  <div class="onboarding-container" style="display:none" id="setup-section">
+    <div class="onboarding-form active" id="onboarding-form">
+      <h2 class="heading-lg" style="text-align:center;margin-bottom:8px">Set Up Your Profile</h2>
+      <p class="text-sm text-muted" style="text-align:center;margin-bottom:16px">Tell us about yourself so we can personalize your experience</p>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" class="neu-input" id="ob-name" placeholder="Enter your name">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" class="neu-input" id="ob-age" placeholder="25">
+        </div>
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" class="neu-input" id="ob-height" placeholder="175">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Current Weight (kg)</label>
+          <input type="number" class="neu-input" id="ob-weight" placeholder="70" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Target Weight (kg)</label>
+          <input type="number" class="neu-input" id="ob-target" placeholder="65" step="0.1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Protein Goal (g/day)</label>
+        <input type="number" class="neu-input" id="ob-protein" placeholder="140">
+      </div>
+
+      <div class="form-group">
+        <label>Calorie Goal (kcal/day)</label>
+        <input type="number" class="neu-input" id="ob-calories" placeholder="2000">
+      </div>
+
+      <div class="form-group">
+        <label>Your Goal</label>
+        <div class="goal-options" id="goal-options">
+          <div class="goal-option" data-goal="fat-loss" onclick="selectGoal(this)">🔥 Fat Loss</div>
+          <div class="goal-option" data-goal="muscle-gain" onclick="selectGoal(this)">💪 Muscle Gain</div>
+          <div class="goal-option" data-goal="bulk" onclick="selectGoal(this)">🍖 Bulk</div>
+          <div class="goal-option" data-goal="cut" onclick="selectGoal(this)">✂️ Cut</div>
+          <div class="goal-option" data-goal="recomposition" onclick="selectGoal(this)" style="grid-column: span 2">⚡ Body Recomposition</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Gemini API Key (for AI features)</label>
+        <input type="password" class="neu-input" id="ob-api-key" placeholder="AIza...">
+        <span class="text-xs text-muted">Free at aistudio.google.com • Optional</span>
+      </div>
+
+      <button class="cta-btn cta-primary" onclick="saveOnboarding()" style="margin-top:8px">
+        🚀 Start Tracking
+      </button>
+    </div>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script>
+    let selectedGoal = 'fat-loss';
+
+    // Check if user already has profile
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initDB();
+      const profile = await getProfile();
+      if (profile && profile.name) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      showSplash();
+    });
+
+    function showOnboarding() {
+      document.getElementById('hero-section').style.display = 'none';
+      document.getElementById('setup-section').style.display = 'flex';
+    }
+
+    function selectGoal(el) {
+      document.querySelectorAll('.goal-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedGoal = el.dataset.goal;
+    }
+
+    async function saveOnboarding() {
+      const name = document.getElementById('ob-name').value.trim();
+      if (!name) {
+        showToast('Please enter your name', 'warning');
+        return;
+      }
+
+      const profile = {
+        name: name,
+        age: parseInt(document.getElementById('ob-age').value) || null,
+        height: parseInt(document.getElementById('ob-height').value) || null,
+        weight: parseFloat(document.getElementById('ob-weight').value) || null,
+        targetWeight: parseFloat(document.getElementById('ob-target').value) || null,
+        proteinGoal: parseInt(document.getElementById('ob-protein').value) || 140,
+        calorieGoal: parseInt(document.getElementById('ob-calories').value) || 2000,
+        goalType: selectedGoal,
+        createdAt: new Date().toISOString()
+      };
+
+      await saveProfile(profile);
+
+      // Save API key if provided
+      const apiKey = document.getElementById('ob-api-key').value.trim();
+      if (apiKey) {
+        setApiKey(apiKey);
+      }
+
+      // Save initial weight to daily log
+      if (profile.weight) {
+        const log = await getDailyLog();
+        log.weight = profile.weight;
+        await saveDailyLog(log);
+      }
+
+      showToast('Profile saved! Let\'s go! 💪', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <title>Dashboard - FitTracker AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <!-- Splash -->
+  <div class="splash-screen" id="splash">
+    <div class="splash-logo">FitTracker</div>
+    <div class="splash-sub">Loading your dashboard...</div>
+  </div>
+
+  <!-- Page Header -->
+  <header class="page-header" data-animate>
+    <div class="dashboard-greeting">
+      <div class="greeting-text" id="greeting-text">Good Morning</div>
+      <div class="user-name" id="user-name">—</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="profile.html" class="btn btn-icon btn-secondary" title="Profile" id="btn-profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+      <a href="settings.html" class="btn btn-icon btn-secondary" title="Settings" id="btn-settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <!-- Quick Stats -->
+    <section class="quick-stats" data-animate>
+      <div class="quick-stat calories">
+        <div class="qs-icon">🔥</div>
+        <div class="qs-value" id="stat-calories">0</div>
+        <div class="qs-label" id="stat-calories-goal">/ 2000 kcal</div>
+      </div>
+      <div class="quick-stat protein">
+        <div class="qs-icon">🥩</div>
+        <div class="qs-value" id="stat-protein">0g</div>
+        <div class="qs-label" id="stat-protein-goal">/ 140g goal</div>
+      </div>
+      <div class="quick-stat water">
+        <div class="qs-icon">💧</div>
+        <div class="qs-value" id="stat-water">0</div>
+        <div class="qs-label" id="stat-water-sub">/ 8 glasses</div>
+      </div>
+      <div class="quick-stat weight">
+        <div class="qs-icon">⚖️</div>
+        <div class="qs-value" id="stat-weight">—</div>
+        <div class="qs-label" id="stat-weight-sub">Log weight daily</div>
+      </div>
+    </section>
+
+    <!-- Today's Score Ring -->
+    <section class="progress-ring-section" data-animate>
+      <div class="ring-container">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+          <circle id="progress-circle" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-label">
+          <div class="ring-score" id="ring-score">0</div>
+          <div class="ring-text">TODAY</div>
+        </div>
+      </div>
+      <div class="ring-details">
+        <h3>Today's Score</h3>
+        <div class="ring-detail-item"><span>🥩 Protein</span><span id="ring-protein">0g / 140g</span></div>
+        <div class="ring-detail-item"><span>🔥 Calories</span><span id="ring-calories">0 / 2000</span></div>
+        <div class="ring-detail-item"><span>💪 Gym</span><span id="ring-gym">❌ Not yet</span></div>
+        <div class="ring-detail-item"><span>💧 Water</span><span id="ring-water">0 / 8</span></div>
+      </div>
+    </section>
+
+    <!-- Protein Remaining -->
+    <section class="protein-remaining" data-animate>
+      <div class="pr-header">
+        <div>
+          <div class="text-xs text-muted" style="margin-bottom:4px">PROTEIN REMAINING</div>
+          <div class="pr-value" id="protein-remaining">0g</div>
+        </div>
+        <div style="text-align:right">
+          <div class="text-xs text-muted">Consumed / Goal</div>
+          <div class="text-sm" style="margin-top:2px"><span id="protein-consumed">0</span>g / <span id="protein-goal">140</span>g</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="protein-progress-fill" style="width:0%"></div>
+      </div>
+    </section>
+
+    <!-- Streaks -->
+    <section data-animate>
+      <h3 class="heading-md" style="margin-bottom:12px">🔥 Active Streaks</h3>
+      <div class="streaks-row">
+        <div class="streak-badge" id="streak-gym-badge">
+          <div class="sb-icon">💪</div>
+          <div class="sb-count" id="streak-gym">0</div>
+          <div class="sb-label">Gym Days</div>
+        </div>
+        <div class="streak-badge" id="streak-protein-badge">
+          <div class="sb-icon">🥩</div>
+          <div class="sb-count" id="streak-protein">0</div>
+          <div class="sb-label">Protein</div>
+        </div>
+        <div class="streak-badge" id="streak-water-badge">
+          <div class="sb-icon">💧</div>
+          <div class="sb-count" id="streak-water">0</div>
+          <div class="sb-label">Water</div>
+        </div>
+        <div class="streak-badge" id="streak-creatine-badge">
+          <div class="sb-icon">💊</div>
+          <div class="sb-count" id="streak-creatine">0</div>
+          <div class="sb-label">Creatine</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Checklist -->
+    <section class="daily-checklist" data-animate>
+      <h3 class="heading-md" style="margin-bottom:12px">✅ Today's Checklist</h3>
+      <div class="checklist-item" id="check-gym" onclick="toggleChecklist('gymDone')">
+        <div class="checklist-check"></div>
+        <div class="checklist-label">Gym Done</div>
+      </div>
+      <div class="checklist-item" id="check-creatine" onclick="toggleChecklist('creatine')">
+        <div class="checklist-check"></div>
+        <div class="checklist-label">Creatine Taken</div>
+      </div>
+      <div class="checklist-item" id="check-supplements" onclick="toggleChecklist('supplements')">
+        <div class="checklist-check"></div>
+        <div class="checklist-label">Supplements Taken</div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section data-animate>
+      <h3 class="heading-md" style="margin-bottom:12px">⚡ Quick Actions</h3>
+      <div class="quick-actions">
+        <a href="daily-log.html" class="qa-btn" id="qa-log"><div class="qa-icon">🍽️</div>Log Food</a>
+        <a href="workout.html" class="qa-btn" id="qa-workout"><div class="qa-icon">🏋️</div>Log Workout</a>
+        <a href="chat.html" class="qa-btn" id="qa-chat"><div class="qa-icon">🤖</div>AI Coach</a>
+        <a href="goals.html" class="qa-btn" id="qa-goals"><div class="qa-icon">🏆</div>Goals</a>
+      </div>
+    </section>
+
+    <!-- Charts -->
+    <section class="chart-section" data-animate>
+      <div class="chart-header">
+        <div class="chart-title">📊 Protein (7 Days)</div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart-protein"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-section" data-animate>
+      <div class="chart-header">
+        <div class="chart-title">🔥 Calories (7 Days)</div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart-calories"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-section" data-animate>
+      <div class="chart-header">
+        <div class="chart-title">⚖️ Weight Trend</div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart-weight"></canvas>
+      </div>
+    </section>
+
+    <!-- Recent Meals -->
+    <section data-animate>
+      <h3 class="heading-md" style="margin-bottom:12px">🍽️ Today's Meals</h3>
+      <div id="recent-meals-list"></div>
+    </section>
+  </main>
+
+  <!-- FAB -->
+  <a href="daily-log.html" class="fab" title="Log Food" id="fab-log">+</a>
+
+  <!-- Install Banner -->
+  <div class="install-banner hidden" id="install-banner">
+    <span style="font-size:1.5rem">📲</span>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:0.85rem">Install FitTracker</div>
+      <div style="font-size:0.72rem;color:var(--text-secondary)">Add to home screen for best experience</div>
+    </div>
+    <button class="btn btn-sm btn-primary" onclick="installApp()" id="btn-install">Install</button>
+    <button class="btn btn-icon btn-ghost" onclick="hideInstallBanner()" style="width:28px;height:28px;font-size:0.8rem" id="btn-dismiss-install">✕</button>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="manifest" href="manifest.json">
+  <title>Reports - FitTracker AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="heading-lg">📊 Reports</h1>
+    <button class="btn btn-sm btn-primary" onclick="exportPDF()" id="btn-export-pdf">📄 Export PDF</button>
+  </header>
+
+  <main class="page-content">
+    <!-- Tabs -->
+    <div class="report-tabs">
+      <button class="report-tab active" data-tab="daily" onclick="switchReportTab('daily')" id="tab-daily">Daily</button>
+      <button class="report-tab" data-tab="weekly" onclick="switchReportTab('weekly')" id="tab-weekly">Weekly</button>
+      <button class="report-tab" data-tab="monthly" onclick="switchReportTab('monthly')" id="tab-monthly">Monthly</button>
+      <button class="report-tab" data-tab="cheat" onclick="switchReportTab('cheat');loadCheatReport()" id="tab-cheat-report">Cheat</button>
+    </div>
+
+    <!-- Daily Panel -->
+    <div class="report-panel active" id="panel-daily">
+      <div class="report-summary" data-animate>
+        <h3 class="heading-md" style="margin-bottom:12px">📋 Today's Summary</h3>
+        <div class="rs-item"><span>🔥 Calories</span><span class="rs-value" id="ds-calories">0</span></div>
+        <div class="rs-item"><span>🥩 Protein</span><span class="rs-value" id="ds-protein">0g</span></div>
+        <div class="rs-item"><span>🍞 Carbs</span><span class="rs-value" id="ds-carbs">0g</span></div>
+        <div class="rs-item"><span>🧈 Fat</span><span class="rs-value" id="ds-fat">0g</span></div>
+        <div class="rs-item"><span>💧 Water</span><span class="rs-value" id="ds-water">0</span></div>
+        <div class="rs-item"><span>💪 Gym</span><span id="ds-gym">—</span></div>
+        <div class="rs-item"><span>😴 Sleep</span><span id="ds-sleep">—</span></div>
+        <div class="rs-item"><span>😊 Mood</span><span id="ds-mood">—</span></div>
+        <div class="rs-item"><span>🍔 Cheat Meals</span><span style="color:var(--danger)" id="ds-cheat">0</span></div>
+      </div>
+
+      <div class="ai-summary-card" data-animate>
+        <h3 class="heading-md" style="margin-bottom:4px">🤖 AI Daily Summary</h3>
+        <p class="text-xs text-muted" style="margin-bottom:12px">Generate your end-of-day score</p>
+        <div id="daily-ai-result">
+          <button class="btn btn-primary" onclick="generateDailyAISummary()" id="btn-daily-summary">Generate Summary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Panel -->
+    <div class="report-panel" id="panel-weekly">
+      <div class="report-summary" data-animate>
+        <h3 class="heading-md" style="margin-bottom:12px">📈 Weekly Averages</h3>
+        <div class="rs-item"><span>🥩 Avg Protein</span><span class="rs-value" id="wr-protein">0g</span></div>
+        <div class="rs-item"><span>🔥 Avg Calories</span><span class="rs-value" id="wr-calories">0</span></div>
+        <div class="rs-item"><span>💪 Gym Days</span><span class="rs-value" id="wr-gym">0/7</span></div>
+        <div class="rs-item"><span>😴 Avg Sleep</span><span class="rs-value" id="wr-sleep">—</span></div>
+        <div class="rs-item"><span>🍔 Cheat Meals</span><span style="color:var(--danger)" id="wr-cheat">0</span></div>
+      </div>
+
+      <div class="ai-summary-card" data-animate>
+        <h3 class="heading-md" style="margin-bottom:4px">🤖 AI Weekly Report</h3>
+        <p class="text-xs text-muted" style="margin-bottom:12px">Get AI ratings for your week</p>
+        <div id="weekly-ai-result">
+          <button class="btn btn-primary" onclick="generateWeeklyAIReport()" id="btn-weekly-report">Generate Report</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Panel -->
+    <div class="report-panel" id="panel-monthly">
+      <div class="ai-summary-card" data-animate>
+        <h3 class="heading-md" style="margin-bottom:4px">🤖 Monthly Coach Report</h3>
+        <p class="text-xs text-muted" style="margin-bottom:12px">Comprehensive month analysis with grades</p>
+        <div id="monthly-ai-result">
+          <button class="btn btn-primary" onclick="generateMonthlyAIReport()" id="btn-monthly-report">Generate Monthly Report</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cheat Panel -->
+    <div class="report-panel" id="panel-cheat">
+      <div class="cheat-report" data-animate>
+        <h3 class="heading-md" style="margin-bottom:16px">🍔 Cheat Meal Report (This Month)</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="stat-card" style="text-align:center;border-color:rgba(239,68,68,0.2)">
+            <div class="stat-value" style="color:var(--danger)" id="cheat-count">0</div>
+            <div class="stat-label">Total Cheats</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-value" id="cheat-sodium">0mg</div>
+            <div class="stat-label">Total Sodium</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-value" id="cheat-fat">0g</div>
+            <div class="stat-label">Total Fat</div>
+          </div>
+        </div>
+        <div id="cheat-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

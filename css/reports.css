@@ -1,0 +1,173 @@
+/* Reports Page CSS */
+.report-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.report-tab {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  flex: 1;
+  text-align: center;
+}
+
+.report-tab.active {
+  background: var(--accent);
+  color: #0a0a0a;
+  border-color: var(--accent);
+}
+
+.report-panel { display: none; }
+.report-panel.active { display: block; }
+
+/* Rating Cards */
+.rating-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rating-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+}
+
+.rating-card .rc-score {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.rating-card .rc-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.rating-card .rc-out {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Summary Card */
+.report-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.report-summary .rs-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.report-summary .rs-item:last-child { border: none; }
+
+.rs-value {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* AI Summary */
+.ai-summary-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background: radial-gradient(circle at 100% 0%, var(--accent-glow), transparent 70%);
+}
+
+.ai-summary-card h3, .ai-summary-card p, .ai-summary-card ul {
+  position: relative;
+}
+
+.ai-summary-card ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+.ai-summary-card ul li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+/* Cheat Meal Report */
+.cheat-report {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), var(--bg-card));
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cheat-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.cheat-stat .cs-count {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--danger);
+}
+
+/* Monthly Grade */
+.grade-display {
+  text-align: center;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.grade-letter {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.grade-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+@media (min-width: 768px) {
+  .rating-grid { grid-template-columns: repeat(4, 1fr); }
+}

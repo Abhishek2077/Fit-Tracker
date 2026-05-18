@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="manifest" href="manifest.json">
+  <title>Daily Log - FitTracker AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/daily-log.css">
+</head>
+<body>
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="heading-lg">📝 Daily Log</h1>
+    <div class="badge badge-accent" id="today-date"></div>
+  </header>
+
+  <main class="page-content">
+    <!-- Tabs -->
+    <div class="log-tabs">
+      <button class="log-tab active" data-tab="food" onclick="switchTab('food')" id="tab-food">🍽️ Food</button>
+      <button class="log-tab" data-tab="tracking" onclick="switchTab('tracking')" id="tab-tracking">📊 Tracking</button>
+      <button class="log-tab" data-tab="cheat" onclick="switchTab('cheat')" id="tab-cheat">🍕 Cheat Meal</button>
+      <button class="log-tab" data-tab="history" onclick="switchTab('history')" id="tab-history">📋 History</button>
+    </div>
+
+    <!-- Food Panel -->
+    <div class="log-panel active" id="panel-food">
+      <div class="food-input-area">
+        <textarea class="food-textarea" id="food-input" placeholder="Type what you ate...&#10;Example: 200g chana + 1 scoop whey + 4 eggs"></textarea>
+        <div class="food-actions">
+          <button class="btn btn-primary" onclick="analyzeFood()" id="btn-analyze">🤖 Analyze with AI</button>
+          <button class="btn btn-secondary" onclick="startFoodVoice()" id="btn-voice">🎙️ Voice</button>
+          <button class="btn btn-secondary" onclick="triggerPhotoUpload()" id="btn-photo">📸 Photo</button>
+        </div>
+        <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
+      </div>
+
+      <!-- Photo Upload Area -->
+      <div class="photo-upload-area" onclick="triggerPhotoUpload()" id="photo-drop-area">
+        <div class="photo-icon">📷</div>
+        <div class="text-sm" style="font-weight:600">Upload Food Photo</div>
+        <div class="text-xs text-muted" style="margin-top:4px">AI will analyze and estimate nutrition</div>
+        <div class="text-xs text-muted" style="margin-top:8px;color:var(--success)">🔒 Photos are never saved — processed & deleted</div>
+      </div>
+
+      <!-- Analysis Result -->
+      <div id="analysis-result"></div>
+    </div>
+
+    <!-- Tracking Panel -->
+    <div class="log-panel" id="panel-tracking">
+      <div class="tracking-card">
+        <h3 class="heading-md" style="margin-bottom:12px">⚖️ Weight</h3>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input type="number" class="neu-input" id="track-weight" placeholder="70.5" step="0.1" style="flex:1">
+          <span class="text-muted">kg</span>
+          <button class="btn btn-sm btn-primary" onclick="updateWeight()" id="btn-save-weight">Save</button>
+        </div>
+      </div>
+
+      <div class="tracking-card">
+        <h3 class="heading-md" style="margin-bottom:12px">💧 Water Intake</h3>
+        <div class="water-counter">
+          <button class="water-btn" onclick="adjustWater(-1)" id="btn-water-minus">−</button>
+          <div class="water-count" id="water-count">0</div>
+          <button class="water-btn" onclick="adjustWater(1)" id="btn-water-plus">+</button>
+          <span class="text-sm text-muted">glasses</span>
+        </div>
+      </div>
+
+      <div class="tracking-card">
+        <h3 class="heading-md" style="margin-bottom:12px">😴 Sleep</h3>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input type="number" class="neu-input" id="track-sleep" placeholder="7.5" step="0.5" min="0" max="24" style="flex:1">
+          <span class="text-muted">hours</span>
+          <button class="btn btn-sm btn-primary" onclick="updateSleep()" id="btn-save-sleep">Save</button>
+        </div>
+      </div>
+
+      <div class="tracking-card">
+        <h3 class="heading-md" style="margin-bottom:12px">😊 Mood</h3>
+        <div class="mood-selector">
+          <div class="mood-option" data-mood="tired" onclick="selectMood(this)">😵 Tired</div>
+          <div class="mood-option" data-mood="normal" onclick="selectMood(this)">🙂 Normal</div>
+          <div class="mood-option" data-mood="beast" onclick="selectMood(this)">💪 Beast</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cheat Meal Panel -->
+    <div class="log-panel" id="panel-cheat">
+      <div class="cheat-section">
+        <h3 class="heading-md" style="margin-bottom:4px">🍔 Quick Cheat Meal Log</h3>
+        <p class="text-xs text-muted" style="margin-bottom:16px">Tap to log common cheat meals instantly</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button class="btn btn-secondary" onclick="logCheatMeal('Pizza (2 slices)', 540, 22, 24, 1200)" style="justify-content:start" id="btn-cheat-pizza">
+            🍕 Pizza (2 slices)
+          </button>
+          <button class="btn btn-secondary" onclick="logCheatMeal('KFC Bucket (3pc)', 680, 42, 38, 1800)" style="justify-content:start" id="btn-cheat-kfc">
+            🍗 KFC (3 pieces)
+          </button>
+          <button class="btn btn-secondary" onclick="logCheatMeal('Burger + Fries', 750, 28, 36, 1400)" style="justify-content:start" id="btn-cheat-burger">
+            🍔 Burger + Fries
+          </button>
+          <button class="btn btn-secondary" onclick="logCheatMeal('Cold Drink (500ml)', 210, 0, 0, 40)" style="justify-content:start" id="btn-cheat-drink">
+            🥤 Cold Drink
+          </button>
+          <button class="btn btn-secondary" onclick="logCheatMeal('Samosa (2pc)', 300, 6, 18, 600)" style="justify-content:start" id="btn-cheat-samosa">
+            🥟 Samosa (2pc)
+          </button>
+          <button class="btn btn-secondary" onclick="logCheatMeal('Ice Cream', 280, 4, 14, 100)" style="justify-content:start" id="btn-cheat-icecream">
+            🍦 Ice Cream
+          </button>
+        </div>
+
+        <div style="margin-top:16px;padding:12px;background:var(--danger-light);border-radius:var(--radius-sm)">
+          <p class="text-xs" style="color:var(--danger)">⚠️ Cheat meals are tracked separately and highlighted in red in your reports. AI will analyze their impact on your goals.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <p class="text-sm text-muted" style="margin-bottom:8px">Or type a custom cheat meal in the Food tab — AI will auto-detect it!</p>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="log-panel" id="panel-history">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 class="heading-md">Today's Meals</h3>
+        <div class="text-sm">
+          <span class="text-accent" id="today-total-cal">0</span> kcal •
+          <span class="text-accent" id="today-total-protein">0g</span> protein
+        </div>
+      </div>
+      <div id="meals-list"></div>
+    </div>
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/daily-log.js"></script>
+  <script>
+    document.getElementById('today-date').textContent = formatDate(new Date().toISOString());
+  </script>
+</body>
+</html>
