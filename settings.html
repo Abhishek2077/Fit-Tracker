@@ -41,6 +41,25 @@
       </div>
     </section>
 
+    <!-- Tracking Cycle -->
+    <section class="settings-section" data-animate>
+      <h3>📅 Tracking Cycle</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Manual Cycle Mode</div>
+          <div class="setting-desc">Track 30-day cycles manually instead of calendar months</div>
+        </div>
+        <div class="toggle" id="toggle-manual-cycle" onclick="toggleManualCycle()"></div>
+      </div>
+      <div class="setting-row" id="manual-cycle-controls" style="display:none;flex-direction:column;align-items:stretch;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="setting-desc" id="current-cycle-status" style="font-weight:600;color:var(--accent);">No cycle active</div>
+          <button class="btn btn-sm btn-primary" onclick="startNewCycle()">🚀 Start New Cycle</button>
+        </div>
+        <div class="text-xs text-muted">Starting a new cycle will restart your tracked month counting exactly from today.</div>
+      </div>
+    </section>
+
     <!-- AI Settings -->
     <section class="settings-section" data-animate>
       <h3>🤖 AI Configuration</h3>

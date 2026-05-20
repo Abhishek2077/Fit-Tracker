@@ -173,6 +173,15 @@ function getToday() {
 }
 
 function getCurrentMonth() {
+  const mode = localStorage.getItem('ft-cycle-mode') || 'calendar';
+  if (mode === 'manual') {
+    let start = localStorage.getItem('ft-cycle-start');
+    if (!start) {
+      start = getToday();
+      localStorage.setItem('ft-cycle-start', start);
+    }
+    return 'Cycle: ' + start;
+  }
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }

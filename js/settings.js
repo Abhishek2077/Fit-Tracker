@@ -24,6 +24,14 @@ function loadSettings() {
   const reminders = localStorage.getItem('ft-reminders') !== 'false';
   if (reminders) document.getElementById('toggle-reminders').classList.add('active');
 
+  // Tracking Cycle
+  const cycleMode = localStorage.getItem('ft-cycle-mode') || 'calendar';
+  if (cycleMode === 'manual') {
+    document.getElementById('toggle-manual-cycle').classList.add('active');
+    document.getElementById('manual-cycle-controls').style.display = 'flex';
+    updateCycleStatus();
+  }
+
   // Data stats
   loadDataStats();
 }
@@ -41,6 +49,42 @@ function toggleReminders() {
   const enabled = toggle.classList.contains('active');
   localStorage.setItem('ft-reminders', enabled);
   showToast(enabled ? 'Reminders enabled' : 'Reminders disabled', 'success');
+}
+
+/* ---------- Tracking Cycle ---------- */
+function toggleManualCycle() {
+  const toggle = document.getElementById('toggle-manual-cycle');
+  toggle.classList.toggle('active');
+  const isManual = toggle.classList.contains('active');
+  localStorage.setItem('ft-cycle-mode', isManual ? 'manual' : 'calendar');
+  
+  const controls = document.getElementById('manual-cycle-controls');
+  if (isManual) {
+    controls.style.display = 'flex';
+    if (!localStorage.getItem('ft-cycle-start')) {
+      localStorage.setItem('ft-cycle-start', getToday());
+    }
+    updateCycleStatus();
+  } else {
+    controls.style.display = 'none';
+  }
+  showToast(isManual ? 'Manual cycle mode enabled' : 'Calendar month mode enabled', 'success');
+}
+
+function startNewCycle() {
+  if (!confirm('This will end your current tracking cycle and start a new one today. Continue?')) return;
+  const today = getToday();
+  localStorage.setItem('ft-cycle-start', today);
+  updateCycleStatus();
+  showToast('New cycle started from ' + today, 'success');
+}
+
+function updateCycleStatus() {
+  const start = localStorage.getItem('ft-cycle-start');
+  const el = document.getElementById('current-cycle-status');
+  if (el && start) {
+    el.textContent = 'Active cycle started on: ' + formatDate(start);
+  }
 }
 
 /* ---------- API Key ---------- */
