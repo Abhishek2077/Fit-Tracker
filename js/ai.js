@@ -4,7 +4,7 @@
    ========================================== */
 
 // API Configuration - Key stored in localStorage for security
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-2.5-pro';
 
 function getApiKey() {
   return localStorage.getItem('ft-gemini-key') || '';
