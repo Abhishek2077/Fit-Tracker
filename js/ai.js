@@ -4,7 +4,7 @@
    ========================================== */
 
 // API Configuration - Key stored in localStorage for security
-const GEMINI_MODEL = 'gemini-1.5-flash-latest';
+const GEMINI_MODEL = 'gemini-2.0-flash-lite';
 
 function getApiKey() {
   return localStorage.getItem('ft-gemini-key') || '';
@@ -106,15 +106,18 @@ Respond ONLY in this exact JSON format (no markdown, no explanation, just pure J
 }
 
 /* ---------- Photo Analysis ---------- */
-async function analyzeFoodPhoto(imageBase64) {
+async function analyzeFoodPhoto(imageBase64, textContext = null) {
   const apiKey = getApiKey();
   if (!apiKey) throw new Error('API key not set.');
+
+  const promptText = textContext
+    ? `The user says this food is: "${textContext}". Look at the image and estimate nutritional content. Respond ONLY in this exact JSON format (no markdown):\n`
+    : `Identify the food in this image and estimate nutritional content. Respond ONLY in this exact JSON format (no markdown):\n`;
 
   const body = {
     contents: [{
       parts: [
-        { text: `Identify the food in this image and estimate nutritional content. Respond ONLY in this exact JSON format (no markdown):
-{
+        { text: promptText + `{
   "description": "identified food items",
   "calories": number,
   "protein": number,
@@ -139,7 +142,10 @@ async function analyzeFoodPhoto(imageBase64) {
     body: JSON.stringify(body)
   });
 
-  if (!response.ok) throw new Error('Photo analysis failed');
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.error?.message || 'Photo analysis failed (HTTP ' + response.status + ')');
+  }
 
   const data = await response.json();
   let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -147,7 +153,12 @@ async function analyzeFoodPhoto(imageBase64) {
     text = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
   }
 
-  return JSON.parse(text);
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    console.error('Photo analysis parse error:', text);
+    throw new Error('Could not parse photo analysis. Try again.');
+  }
 }
 
 /* ---------- Daily Summary Generation ---------- */

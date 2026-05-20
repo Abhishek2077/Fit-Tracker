@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadTodaysMeals();
   initAnimations();
 
+  // Paste image support
   const foodInput = document.getElementById('food-input');
   if (foodInput) {
     foodInput.addEventListener('paste', (e) => {
@@ -18,12 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
           e.preventDefault();
           processImageFile(items[i].getAsFile());
-          return; // Only process first image
+          return;
         }
       }
     });
   }
 });
+
+/* ---------- Pending Image State ---------- */
+let pendingFoodImage = null;
 
 /* ---------- Tab Switching ---------- */
 function switchTab(tab) {
@@ -33,11 +37,13 @@ function switchTab(tab) {
   document.getElementById(`panel-${tab}`).classList.add('active');
 }
 
-/* ---------- Food Analysis ---------- */
+/* ---------- Food Analysis (Text + Image unified) ---------- */
 async function analyzeFood() {
   const input = document.getElementById('food-input').value.trim();
-  if (!input) {
-    showToast('Type what you ate first', 'warning');
+  const hasImage = !!pendingFoodImage;
+
+  if (!input && !hasImage) {
+    showToast('Type what you ate or attach a photo', 'warning');
     return;
   }
 
@@ -45,14 +51,22 @@ async function analyzeFood() {
   resultContainer.innerHTML = `
     <div class="analyzing-spinner">
       <div class="spinner"></div>
-      <div class="text-sm text-muted">AI is analyzing your meal...</div>
+      <div class="text-sm text-muted">${hasImage ? 'AI is analyzing your photo...' : 'AI is analyzing your meal...'}</div>
     </div>
   `;
 
   try {
     const profile = await getProfile();
-    const analysis = await analyzeFoodText(input, profile);
-    showAnalysisResult(analysis, input);
+    let analysis;
+
+    if (hasImage) {
+      analysis = await analyzeFoodPhoto(pendingFoodImage, input || null);
+      clearPendingImage();
+    } else {
+      analysis = await analyzeFoodText(input, profile);
+    }
+
+    showAnalysisResult(analysis, input || 'Photo meal');
   } catch (error) {
     resultContainer.innerHTML = `
       <div class="analysis-card" style="border-color: var(--danger)">
@@ -104,7 +118,6 @@ function showAnalysisResult(analysis, originalText) {
     </div>
   `;
 
-  // Store analysis data on button
   window._currentAnalysis = { ...analysis, originalText };
 }
 
@@ -133,6 +146,8 @@ async function saveMealFromAnalysis() {
 function clearAnalysis() {
   document.getElementById('analysis-result').innerHTML = '';
   window._currentAnalysis = null;
+  pendingFoodImage = null;
+  document.getElementById('food-input').placeholder = 'Type or paste (Ctrl+V) an image here...';
 }
 
 /* ---------- Photo Upload ---------- */
@@ -148,14 +163,6 @@ async function handlePhotoUpload(event) {
 }
 
 async function processImageFile(file) {
-  const resultContainer = document.getElementById('analysis-result');
-  resultContainer.innerHTML = `
-    <div class="analyzing-spinner">
-      <div class="spinner"></div>
-      <div class="text-sm text-muted">Analyzing food photo...</div>
-    </div>
-  `;
-
   try {
     const base64 = await new Promise((resolve) => {
       const reader = new FileReader();
@@ -163,15 +170,33 @@ async function processImageFile(file) {
       reader.readAsDataURL(file);
     });
 
-    const analysis = await analyzeFoodPhoto(base64);
-    showAnalysisResult(analysis, 'Photo meal');
-  } catch (error) {
-    resultContainer.innerHTML = `
-      <div class="analysis-card" style="border-color:var(--danger)">
-        <p style="color:var(--danger)">❌ Photo analysis failed: ${error.message}</p>
+    pendingFoodImage = base64;
+
+    // Show attached indicator
+    const previewArea = document.getElementById('analysis-result');
+    previewArea.innerHTML = `
+      <div class="analysis-card" style="border-color:var(--accent);">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:50px;height:50px;border-radius:12px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📷</div>
+          <div style="flex:1">
+            <div class="text-sm" style="font-weight:600;color:var(--accent);">Image attached</div>
+            <div class="text-xs text-muted">Type what this is (optional), then tap Analyze</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearAnalysis()" style="font-size:1.2rem;">✕</button>
+        </div>
       </div>
     `;
+
+    document.getElementById('food-input').placeholder = 'Describe this food (optional)...';
+    showToast('📷 Image attached! Tap Analyze', 'success');
+  } catch (e) {
+    showToast('Failed to read image: ' + e.message, 'danger');
   }
+}
+
+function clearPendingImage() {
+  pendingFoodImage = null;
+  document.getElementById('food-input').placeholder = 'Type or paste (Ctrl+V) an image here...';
 }
 
 /* ---------- Voice Input ---------- */
