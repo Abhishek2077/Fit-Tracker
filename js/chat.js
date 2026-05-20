@@ -17,7 +17,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       sendMessage();
     }
   });
+
+  // Add paste event listener
+  const chatInput = document.getElementById('chat-input');
+  if (chatInput) {
+    chatInput.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+          e.preventDefault();
+          processChatImageFile(items[i].getAsFile());
+          return;
+        }
+      }
+    });
+  }
 });
+
+/* ---------- Chat Image Handling ---------- */
+let pendingImageBase64 = null;
+
+function triggerChatPhotoUpload() {
+  document.getElementById('chat-photo-file-input').click();
+}
+
+async function handleChatPhotoUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  await processChatImageFile(file);
+  event.target.value = '';
+}
+
+async function processChatImageFile(file) {
+  try {
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+    pendingImageBase64 = base64;
+    document.getElementById('chat-input').placeholder = "Image attached! Write a prompt...";
+    showToast('Image attached', 'info');
+  } catch(e) {
+    showToast('Failed to attach image', 'danger');
+  }
+}
 
 /* ---------- Load Chat History ---------- */
 async function loadChatHistory() {
@@ -45,16 +89,20 @@ function addWelcomeMessage() {
 async function sendMessage() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text && !pendingImageBase64) return;
 
+  const sendingImage = pendingImageBase64;
+  pendingImageBase64 = null;
+  input.placeholder = "Ask or paste image (Ctrl+V)...";
   input.value = '';
   input.style.height = 'auto';
 
   // Add user bubble
-  appendBubble('user', text);
+  let userText = text || 'Sent an image';
+  appendBubble('user', sendingImage ? '🎨 [Image] ' + userText : userText);
 
   // Save to DB
-  const userMsg = { role: 'user', text, timestamp: new Date().toISOString() };
+  const userMsg = { role: 'user', text: userText + (sendingImage ? ' (with image)' : ''), timestamp: new Date().toISOString() };
   await dbPut(STORES.CHAT_HISTORY, userMsg);
   chatHistory.push(userMsg);
 
@@ -63,7 +111,7 @@ async function sendMessage() {
 
   try {
     const profile = await getProfile();
-    const response = await chatWithAI(text, chatHistory, profile);
+    const response = await chatWithAI(text, chatHistory, profile, sendingImage);
 
     hideTyping();
     appendBubble('ai', response);

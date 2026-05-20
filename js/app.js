@@ -228,24 +228,34 @@ function startVoiceInput(callback) {
     return;
   }
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  try {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = navigator.language || 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    callback(transcript);
-    showToast('Voice captured: ' + transcript.substring(0, 50), 'success');
-  };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      callback(transcript);
+      showToast('Voice captured! 🎙️', 'success');
+    };
 
-  recognition.onerror = (event) => {
-    showToast('Voice error: ' + event.error, 'danger');
-  };
+    recognition.onerror = (event) => {
+      if (event.error === 'not-allowed') {
+        showToast('Microphone access denied. Please allow in browser settings.', 'danger');
+      } else if (event.error === 'no-speech') {
+        showToast('No speech detected. Try again.', 'warning');
+      } else {
+        showToast('Voice error: ' + event.error, 'danger');
+      }
+    };
 
-  recognition.start();
-  showToast('🎙 Listening... speak now', 'info');
+    recognition.start();
+    showToast('🎙 Listening... speak now', 'info');
+  } catch (err) {
+    showToast('Voice API error: ' + err.message, 'danger');
+  }
 }
 
 /* ---------- Smart Reminders Check ---------- */

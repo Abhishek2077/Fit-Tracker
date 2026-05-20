@@ -29,21 +29,17 @@
     <!-- Food Panel -->
     <div class="log-panel active" id="panel-food">
       <div class="food-input-area">
-        <textarea class="food-textarea" id="food-input" placeholder="Type what you ate...&#10;Example: 200g chana + 1 scoop whey + 4 eggs"></textarea>
-        <div class="food-actions">
-          <button class="btn btn-primary" onclick="analyzeFood()" id="btn-analyze">🤖 Analyze with AI</button>
-          <button class="btn btn-secondary" onclick="startFoodVoice()" id="btn-voice">🎙️ Voice</button>
-          <button class="btn btn-secondary" onclick="triggerPhotoUpload()" id="btn-photo">📸 Photo</button>
+        <div style="display:flex; gap:8px; align-items:flex-end;">
+          <button class="btn btn-icon btn-secondary" onclick="triggerPhotoUpload()" id="btn-photo-icon" style="width:46px;height:46px;border-radius:50%;flex-shrink:0;" title="Upload Image">
+            ➕
+          </button>
+          <textarea class="food-textarea" id="food-input" placeholder="Type or paste (Ctrl+V) an image here..." style="flex:1; border-radius:20px;"></textarea>
         </div>
-        <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
-      </div>
-
-      <!-- Photo Upload Area -->
-      <div class="photo-upload-area" onclick="triggerPhotoUpload()" id="photo-drop-area">
-        <div class="photo-icon">📷</div>
-        <div class="text-sm" style="font-weight:600">Upload Food Photo</div>
-        <div class="text-xs text-muted" style="margin-top:4px">AI will analyze and estimate nutrition</div>
-        <div class="text-xs text-muted" style="margin-top:8px;color:var(--success)">🔒 Photos are never saved — processed & deleted</div>
+        <div class="food-actions" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="analyzeFood()" id="btn-analyze" style="flex:1;">🤖 Analyze with AI</button>
+          <button class="btn btn-secondary" onclick="startFoodVoice()" id="btn-voice" style="width:46px;height:46px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;">🎙️</button>
+        </div>
+        <input type="file" id="photo-file-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
       </div>
 
       <!-- Analysis Result -->

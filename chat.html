@@ -37,9 +37,11 @@
 
       <!-- Input -->
       <div class="chat-input-area">
-        <button class="btn btn-icon btn-secondary" onclick="startChatVoice()" style="width:46px;height:46px;flex-shrink:0" id="btn-voice-chat">🎙️</button>
-        <textarea class="chat-input" id="chat-input" placeholder="Ask your AI coach..." rows="1"></textarea>
+        <button class="btn btn-icon btn-secondary" onclick="triggerChatPhotoUpload()" style="width:46px;height:46px;flex-shrink:0;border-radius:50%;" title="Upload Image">➕</button>
+        <button class="btn btn-icon btn-secondary" onclick="startChatVoice()" style="width:46px;height:46px;flex-shrink:0;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;" id="btn-voice-chat">🎙️</button>
+        <textarea class="chat-input" id="chat-input" placeholder="Ask or paste image (Ctrl+V)..." rows="1"></textarea>
         <button class="chat-send" onclick="sendMessage()" id="btn-send">➤</button>
+        <input type="file" id="chat-photo-file-input" accept="image/*" style="display:none" onchange="handleChatPhotoUpload(event)">
       </div>
     </div>
   </main>

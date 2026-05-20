@@ -9,6 +9,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadDailyTracking();
   loadTodaysMeals();
   initAnimations();
+
+  const foodInput = document.getElementById('food-input');
+  if (foodInput) {
+    foodInput.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+          e.preventDefault();
+          processImageFile(items[i].getAsFile());
+          return; // Only process first image
+        }
+      }
+    });
+  }
 });
 
 /* ---------- Tab Switching ---------- */
@@ -129,7 +143,11 @@ function triggerPhotoUpload() {
 async function handlePhotoUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
+  await processImageFile(file);
+  event.target.value = '';
+}
 
+async function processImageFile(file) {
   const resultContainer = document.getElementById('analysis-result');
   resultContainer.innerHTML = `
     <div class="analyzing-spinner">
@@ -139,7 +157,6 @@ async function handlePhotoUpload(event) {
   `;
 
   try {
-    // Convert to base64
     const base64 = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -148,9 +165,6 @@ async function handlePhotoUpload(event) {
 
     const analysis = await analyzeFoodPhoto(base64);
     showAnalysisResult(analysis, 'Photo meal');
-
-    // Clear file input (privacy - don't keep photo reference)
-    event.target.value = '';
   } catch (error) {
     resultContainer.innerHTML = `
       <div class="analysis-card" style="border-color:var(--danger)">

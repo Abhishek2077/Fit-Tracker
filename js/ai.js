@@ -4,7 +4,7 @@
    ========================================== */
 
 // API Configuration - Key stored in localStorage for security
-const GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_MODEL = 'gemini-1.5-flash-latest';
 
 function getApiKey() {
   return localStorage.getItem('ft-gemini-key') || '';
@@ -288,7 +288,7 @@ Respond ONLY in JSON:
 }
 
 /* ---------- AI Chat ---------- */
-async function chatWithAI(message, chatHistory = [], profile = null) {
+async function chatWithAI(message, chatHistory = [], profile = null, imageBase64 = null) {
   let context = '';
   if (profile) {
     context = `User: ${profile.name || 'User'}, ${profile.age || ''}yo, ${profile.weight || ''}kg, Goal: ${profile.goalType || 'fitness'}. `;
@@ -301,13 +301,45 @@ async function chatWithAI(message, chatHistory = [], profile = null) {
     historyContext += `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.text}\n`;
   });
 
-  const prompt = `${context}
+  const promptText = `${context}
 Previous conversation:
 ${historyContext}
 
-User's new message: "${message}"
+User's new message: "${message || 'Please analyze this image'}"
 
 Respond naturally as a fitness coach. Keep it concise, helpful, and motivational. Use emojis sparingly.`;
 
-  return await callGemini(prompt, FITNESS_COACH_PROMPT);
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error('API key not set. Go to Settings to add your Gemini API key.');
+  }
+
+  const parts = [{ text: promptText }];
+  if (imageBase64) {
+    parts.push({ inlineData: { mimeType: 'image/jpeg', data: imageBase64 } });
+  }
+
+  const body = {
+    contents: [{ parts }],
+    systemInstruction: { parts: [{ text: FITNESS_COACH_PROMPT }] },
+    generationConfig: {
+      temperature: 0.7,
+      topP: 0.9,
+      maxOutputTokens: 2048
+    }
+  };
+
+  const response = await fetch(getApiUrl(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || 'API request failed');
+  }
+
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
 }
