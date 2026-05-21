@@ -48,16 +48,6 @@
         <div class="qs-value" id="stat-protein">0g</div>
         <div class="qs-label" id="stat-protein-goal">/ 140g goal</div>
       </div>
-      <div class="quick-stat water">
-        <div class="qs-icon">💧</div>
-        <div class="qs-value" id="stat-water">0</div>
-        <div class="qs-label" id="stat-water-sub">/ 8 glasses</div>
-      </div>
-      <div class="quick-stat weight">
-        <div class="qs-icon">⚖️</div>
-        <div class="qs-value" id="stat-weight">—</div>
-        <div class="qs-label" id="stat-weight-sub">Log weight daily</div>
-      </div>
     </section>
 
     <!-- Today's Score Ring -->
@@ -76,8 +66,6 @@
         <h3>Today's Score</h3>
         <div class="ring-detail-item"><span>🥩 Protein</span><span id="ring-protein">0g / 140g</span></div>
         <div class="ring-detail-item"><span>🔥 Calories</span><span id="ring-calories">0 / 2000</span></div>
-        <div class="ring-detail-item"><span>💪 Gym</span><span id="ring-gym">❌ Not yet</span></div>
-        <div class="ring-detail-item"><span>💧 Water</span><span id="ring-water">0 / 8</span></div>
       </div>
     </section>
 
@@ -102,43 +90,11 @@
     <section data-animate>
       <h3 class="heading-md" style="margin-bottom:12px">🔥 Active Streaks</h3>
       <div class="streaks-row">
-        <div class="streak-badge" id="streak-gym-badge">
-          <div class="sb-icon">💪</div>
-          <div class="sb-count" id="streak-gym">0</div>
-          <div class="sb-label">Gym Days</div>
-        </div>
         <div class="streak-badge" id="streak-protein-badge">
           <div class="sb-icon">🥩</div>
           <div class="sb-count" id="streak-protein">0</div>
           <div class="sb-label">Protein</div>
         </div>
-        <div class="streak-badge" id="streak-water-badge">
-          <div class="sb-icon">💧</div>
-          <div class="sb-count" id="streak-water">0</div>
-          <div class="sb-label">Water</div>
-        </div>
-        <div class="streak-badge" id="streak-creatine-badge">
-          <div class="sb-icon">💊</div>
-          <div class="sb-count" id="streak-creatine">0</div>
-          <div class="sb-label">Creatine</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Daily Checklist -->
-    <section class="daily-checklist" data-animate>
-      <h3 class="heading-md" style="margin-bottom:12px">✅ Today's Checklist</h3>
-      <div class="checklist-item" id="check-gym" onclick="toggleChecklist('gymDone')">
-        <div class="checklist-check"></div>
-        <div class="checklist-label">Gym Done</div>
-      </div>
-      <div class="checklist-item" id="check-creatine" onclick="toggleChecklist('creatine')">
-        <div class="checklist-check"></div>
-        <div class="checklist-label">Creatine Taken</div>
-      </div>
-      <div class="checklist-item" id="check-supplements" onclick="toggleChecklist('supplements')">
-        <div class="checklist-check"></div>
-        <div class="checklist-label">Supplements Taken</div>
       </div>
     </section>
 
@@ -147,9 +103,7 @@
       <h3 class="heading-md" style="margin-bottom:12px">⚡ Quick Actions</h3>
       <div class="quick-actions">
         <a href="daily-log.html" class="qa-btn" id="qa-log"><div class="qa-icon">🍽️</div>Log Food</a>
-        <a href="workout.html" class="qa-btn" id="qa-workout"><div class="qa-icon">🏋️</div>Log Workout</a>
-        <a href="chat.html" class="qa-btn" id="qa-chat"><div class="qa-icon">🤖</div>AI Coach</a>
-        <a href="goals.html" class="qa-btn" id="qa-goals"><div class="qa-icon">🏆</div>Goals</a>
+        <a href="profile.html" class="qa-btn" id="qa-goals"><div class="qa-icon">🏆</div>Profile</a>
       </div>
     </section>
 
@@ -169,15 +123,6 @@
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart-calories"></canvas>
-      </div>
-    </section>
-
-    <section class="chart-section" data-animate>
-      <div class="chart-header">
-        <div class="chart-title">⚖️ Weight Trend</div>
-      </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="chart-weight"></canvas>
       </div>
     </section>
 
@@ -204,7 +149,6 @@
 
   <script src="js/db.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/ai.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/dashboard.js"></script>
 </body>

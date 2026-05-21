@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0a0a0a">
   <link rel="manifest" href="manifest.json">
-  <title>Daily Log - FitTracker AI</title>
+  <title>Daily Log - FitTracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/daily-log.css">
@@ -21,70 +21,62 @@
     <!-- Tabs -->
     <div class="log-tabs">
       <button class="log-tab active" data-tab="food" onclick="switchTab('food')" id="tab-food">🍽️ Food</button>
-      <button class="log-tab" data-tab="tracking" onclick="switchTab('tracking')" id="tab-tracking">📊 Tracking</button>
       <button class="log-tab" data-tab="cheat" onclick="switchTab('cheat')" id="tab-cheat">🍕 Cheat Meal</button>
       <button class="log-tab" data-tab="history" onclick="switchTab('history')" id="tab-history">📋 History</button>
     </div>
 
-    <!-- Food Panel -->
+    <!-- Food Panel (Manual Entry) -->
     <div class="log-panel active" id="panel-food">
-      <div class="food-input-area">
-        <div style="display:flex; gap:8px; align-items:flex-end;">
-          <button class="btn btn-icon btn-secondary" onclick="triggerPhotoUpload()" id="btn-photo-icon" style="width:46px;height:46px;border-radius:50%;flex-shrink:0;" title="Upload Image">
-            ➕
-          </button>
-          <textarea class="food-textarea" id="food-input" placeholder="Type or paste (Ctrl+V) an image here..." style="flex:1; border-radius:20px;"></textarea>
+      <div class="food-input-area" style="padding:20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border-color);">
+        <h3 class="heading-md" style="margin-bottom:16px;">Add Meal Details</h3>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Food Items</label>
+          <div id="food-items-container">
+            <div class="food-item-row" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <input type="text" class="neu-input manual-food-item" placeholder="e.g. 2 Roti" style="flex:1;">
+              <label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
+                <input type="checkbox" class="manual-food-cheat" style="width:16px;height:16px;accent-color:var(--danger);">
+                Cheat 🔥
+              </label>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="addFoodItemRow()" style="margin-top:4px;">➕ Add Another Item</button>
         </div>
-        <div class="food-actions" style="margin-top:12px;">
-          <button class="btn btn-primary" onclick="analyzeFood()" id="btn-analyze" style="flex:1;">🤖 Analyze with AI</button>
-          <button class="btn btn-secondary" onclick="startFoodVoice()" id="btn-voice" style="width:46px;height:46px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;">🎙️</button>
-        </div>
-        <input type="file" id="photo-file-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-      </div>
 
-      <!-- Analysis Result -->
-      <div id="analysis-result"></div>
-    </div>
-
-    <!-- Tracking Panel -->
-    <div class="log-panel" id="panel-tracking">
-      <div class="tracking-card">
-        <h3 class="heading-md" style="margin-bottom:12px">⚖️ Weight</h3>
-        <div style="display:flex;gap:10px;align-items:center">
-          <input type="number" class="neu-input" id="track-weight" placeholder="70.5" step="0.1" style="flex:1">
-          <span class="text-muted">kg</span>
-          <button class="btn btn-sm btn-primary" onclick="updateWeight()" id="btn-save-weight">Save</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Total Calories (kcal)</label>
+            <input type="number" id="manual-meal-cals" class="neu-input" placeholder="e.g. 350" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Total Protein (g)</label>
+            <input type="number" id="manual-meal-protein" class="neu-input" placeholder="e.g. 15" style="width:100%;">
+          </div>
         </div>
-      </div>
 
-      <div class="tracking-card">
-        <h3 class="heading-md" style="margin-bottom:12px">💧 Water Intake</h3>
-        <div class="water-counter">
-          <button class="water-btn" onclick="adjustWater(-1)" id="btn-water-minus">−</button>
-          <div class="water-count" id="water-count">0</div>
-          <button class="water-btn" onclick="adjustWater(1)" id="btn-water-plus">+</button>
-          <span class="text-sm text-muted">glasses</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+          <div>
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Carbs (g)</label>
+            <input type="number" id="manual-meal-carbs" class="neu-input" placeholder="e.g. 40" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Fat (g)</label>
+            <input type="number" id="manual-meal-fat" class="neu-input" placeholder="e.g. 10" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">Sodium (mg)</label>
+            <input type="number" id="manual-meal-sodium" class="neu-input" placeholder="e.g. 300" style="width:100%;">
+          </div>
         </div>
-      </div>
 
-      <div class="tracking-card">
-        <h3 class="heading-md" style="margin-bottom:12px">😴 Sleep</h3>
-        <div style="display:flex;gap:10px;align-items:center">
-          <input type="number" class="neu-input" id="track-sleep" placeholder="7.5" step="0.5" min="0" max="24" style="flex:1">
-          <span class="text-muted">hours</span>
-          <button class="btn btn-sm btn-primary" onclick="updateSleep()" id="btn-save-sleep">Save</button>
-        </div>
-      </div>
+        <div style="margin-bottom:16px;"></div>
 
-      <div class="tracking-card">
-        <h3 class="heading-md" style="margin-bottom:12px">😊 Mood</h3>
-        <div class="mood-selector">
-          <div class="mood-option" data-mood="tired" onclick="selectMood(this)">😵 Tired</div>
-          <div class="mood-option" data-mood="normal" onclick="selectMood(this)">🙂 Normal</div>
-          <div class="mood-option" data-mood="beast" onclick="selectMood(this)">💪 Beast</div>
-        </div>
+        <button class="btn btn-primary" onclick="saveManualMeal()" style="width:100%;">✅ Save Meal</button>
       </div>
     </div>
+
+
 
     <!-- Cheat Meal Panel -->
     <div class="log-panel" id="panel-cheat">
@@ -114,12 +106,12 @@
         </div>
 
         <div style="margin-top:16px;padding:12px;background:var(--danger-light);border-radius:var(--radius-sm)">
-          <p class="text-xs" style="color:var(--danger)">⚠️ Cheat meals are tracked separately and highlighted in red in your reports. AI will analyze their impact on your goals.</p>
+          <p class="text-xs" style="color:var(--danger)">⚠️ Cheat meals are tracked separately and highlighted in red in your reports to help you stay accountable.</p>
         </div>
       </div>
 
       <div style="margin-top:16px">
-        <p class="text-sm text-muted" style="margin-bottom:8px">Or type a custom cheat meal in the Food tab — AI will auto-detect it!</p>
+        <p class="text-sm text-muted" style="margin-bottom:8px">Or type a custom cheat meal in the Food tab and tick the "Cheat Meal" box!</p>
       </div>
     </div>
 
@@ -138,7 +130,6 @@
 
   <script src="js/db.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/ai.js"></script>
   <script src="js/daily-log.js"></script>
   <script>
     document.getElementById('today-date').textContent = formatDate(new Date().toISOString());

@@ -1,5 +1,5 @@
-// FitTracker AI - Service Worker
-const CACHE_NAME = 'fittracker-v1';
+// FitTracker - Service Worker
+const CACHE_NAME = 'fittracker-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
   '/workout.html',
   '/reports.html',
   '/goals.html',
-  '/chat.html',
+  '/login.html',
   '/settings.html',
   '/css/global.css',
   '/css/dashboard.css',
@@ -18,7 +18,7 @@ const STATIC_ASSETS = [
   '/css/workout.css',
   '/css/reports.css',
   '/css/goals.css',
-  '/css/chat.css',
+  '/css/login.css',
   '/css/settings.css',
   '/js/app.js',
   '/js/db.js',
@@ -28,10 +28,9 @@ const STATIC_ASSETS = [
   '/js/workout.js',
   '/js/reports.js',
   '/js/goals.js',
-  '/js/chat.js',
+  '/js/login.js',
   '/js/settings.js',
   '/js/charts.js',
-  '/js/ai.js',
   '/manifest.json'
 ];
 

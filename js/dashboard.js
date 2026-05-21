@@ -26,7 +26,6 @@ async function loadDashboard() {
     loadProgressRing(profile),
     loadProteinRemaining(profile),
     loadStreaks(),
-    loadChecklist(),
     loadCharts(),
     loadRecentMeals()
   ]);
@@ -41,7 +40,6 @@ async function loadDashboard() {
 /* ---------- Quick Stats ---------- */
 async function loadQuickStats(profile) {
   const nutrition = await getDailyNutrition();
-  const log = await getDailyLog();
 
   // Calories
   const calEl = document.getElementById('stat-calories');
@@ -54,77 +52,47 @@ async function loadQuickStats(profile) {
   if (proEl) animateNumber(proEl, nutrition.protein, 800, 'g');
   const proGoal = document.getElementById('stat-protein-goal');
   if (proGoal) proGoal.textContent = `/ ${profile.proteinGoal || 140}g goal`;
-
-  // Water
-  const waterEl = document.getElementById('stat-water');
-  if (waterEl) animateNumber(waterEl, log.water || 0, 600);
-  document.getElementById('stat-water-sub').textContent = '/ 8 glasses';
-
-  // Weight
-  const weightEl = document.getElementById('stat-weight');
-  if (log.weight) {
-    weightEl.textContent = log.weight + ' kg';
-  } else if (profile.weight) {
-    weightEl.textContent = profile.weight + ' kg';
-  } else {
-    weightEl.textContent = '—';
-  }
-
-  const targetDiff = profile.targetWeight && (log.weight || profile.weight) ?
-    ((log.weight || profile.weight) - profile.targetWeight).toFixed(1) : null;
-  document.getElementById('stat-weight-sub').textContent = targetDiff ? 
-    `${targetDiff > 0 ? targetDiff + 'kg to lose' : Math.abs(targetDiff) + 'kg to gain'}` : 'Log weight daily';
 }
 
 /* ---------- Progress Ring ---------- */
 async function loadProgressRing(profile) {
   const nutrition = await getDailyNutrition();
-  const log = await getDailyLog();
 
   // Calculate daily score
   const proteinGoal = profile.proteinGoal || 140;
   const calorieGoal = profile.calorieGoal || 2000;
 
   let score = 0;
-  // Protein score (40 points)
-  score += Math.min(40, (nutrition.protein / proteinGoal) * 40);
-  // Calorie score (20 points)
+  // Protein score (50 points)
+  score += Math.min(50, (nutrition.protein / proteinGoal) * 50);
+  // Calorie score (50 points)
   const calRatio = nutrition.calories / calorieGoal;
-  score += calRatio >= 0.8 && calRatio <= 1.2 ? 20 : Math.max(0, 20 - Math.abs(1 - calRatio) * 30);
-  // Gym (15 points)
-  if (log.gymDone) score += 15;
-  // Water (10 points)
-  score += Math.min(10, (log.water / 8) * 10);
-  // Sleep (10 points)
-  if (log.sleep && log.sleep >= 7) score += 10;
-  // Supplements (5 points)
-  if (log.creatine) score += 3;
-  if (log.supplements) score += 2;
+  score += calRatio >= 0.8 && calRatio <= 1.2 ? 50 : Math.max(0, 50 - Math.abs(1 - calRatio) * 60);
 
   score = Math.round(Math.min(100, score));
 
   // Animate ring
   const circle = document.getElementById('progress-circle');
-  const circumference = 2 * Math.PI * 42;
-  circle.style.strokeDasharray = circumference;
-  circle.style.strokeDashoffset = circumference;
-  setTimeout(() => {
-    circle.style.transition = 'stroke-dashoffset 1.5s ease';
-    circle.style.strokeDashoffset = circumference * (1 - score / 100);
-  }, 300);
+  if (circle) {
+    const circumference = 2 * Math.PI * 42;
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = circumference;
+    setTimeout(() => {
+      circle.style.transition = 'stroke-dashoffset 1.5s ease';
+      circle.style.strokeDashoffset = circumference * (1 - score / 100);
+    }, 300);
+    circle.style.stroke = getScoreColor(score);
+  }
 
   // Score number
   const scoreEl = document.getElementById('ring-score');
-  animateNumber(scoreEl, score, 1500);
-
-  // Score color
-  circle.style.stroke = getScoreColor(score);
+  if (scoreEl) animateNumber(scoreEl, score, 1500);
 
   // Details
-  document.getElementById('ring-protein').textContent = `${nutrition.protein}g / ${proteinGoal}g`;
-  document.getElementById('ring-calories').textContent = `${nutrition.calories} / ${calorieGoal}`;
-  document.getElementById('ring-gym').textContent = log.gymDone ? '✅ Done' : '❌ Not yet';
-  document.getElementById('ring-water').textContent = `${log.water || 0} / 8 glasses`;
+  const rp = document.getElementById('ring-protein');
+  if (rp) rp.textContent = `${nutrition.protein}g / ${proteinGoal}g`;
+  const rc = document.getElementById('ring-calories');
+  if (rc) rc.textContent = `${nutrition.calories} / ${calorieGoal}`;
 }
 
 /* ---------- Protein Remaining ---------- */
@@ -134,26 +102,20 @@ async function loadProteinRemaining(profile) {
   const remaining = Math.max(0, goal - nutrition.protein);
   const percentage = Math.min(100, (nutrition.protein / goal) * 100);
 
-  document.getElementById('protein-consumed').textContent = nutrition.protein;
-  document.getElementById('protein-goal').textContent = goal;
-  animateNumber(document.getElementById('protein-remaining'), remaining, 800, 'g');
+  const pc = document.getElementById('protein-consumed');
+  if (pc) pc.textContent = nutrition.protein;
+  const pg = document.getElementById('protein-goal');
+  if (pg) pg.textContent = goal;
+  
+  const pr = document.getElementById('protein-remaining');
+  if (pr) animateNumber(pr, remaining, 800, 'g');
 
   const fill = document.getElementById('protein-progress-fill');
-  setTimeout(() => { fill.style.width = percentage + '%'; }, 200);
+  if (fill) setTimeout(() => { fill.style.width = percentage + '%'; }, 200);
 }
 
 /* ---------- Streaks ---------- */
 async function loadStreaks() {
-  const gymStreak = await calculateStreak('gymDone');
-  const creatineStreak = await calculateStreak('creatine');
-
-  // Calculate water streak (water >= 6)
-  const allLogs = await dbGetAll(STORES.DAILY_LOGS);
-  allLogs.sort((a, b) => b.date.localeCompare(a.date));
-  let waterStreak = 0;
-  const today = new Date();
-  for (let i = 0; i < allLogs.length; i++) {
-    const d = new Date(today);
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
     const l = allLogs.find(x => x.date === dateStr);
@@ -180,43 +142,10 @@ async function loadStreaks() {
   document.getElementById('streak-creatine').textContent = creatineStreak;
 
   // Highlight active streaks
-  if (gymStreak >= 3) document.getElementById('streak-gym-badge').classList.add('active');
-  if (proteinStreak >= 3) document.getElementById('streak-protein-badge').classList.add('active');
-  if (waterStreak >= 3) document.getElementById('streak-water-badge').classList.add('active');
-}
-
-/* ---------- Daily Checklist ---------- */
-async function loadChecklist() {
-  const log = await getDailyLog();
-  updateChecklistUI('check-gym', log.gymDone);
-  updateChecklistUI('check-creatine', log.creatine);
-  updateChecklistUI('check-supplements', log.supplements);
-}
-
-function updateChecklistUI(id, checked) {
-  const item = document.getElementById(id);
-  if (!item) return;
-  if (checked) {
-    item.classList.add('checked');
-    item.querySelector('.checklist-check').textContent = '✓';
-  } else {
-    item.classList.remove('checked');
-    item.querySelector('.checklist-check').textContent = '';
-  }
-}
-
-async function toggleChecklist(field) {
-  const log = await getDailyLog();
-  log[field] = !log[field];
-  await saveDailyLog(log);
-  updateChecklistUI(
-    field === 'gymDone' ? 'check-gym' : field === 'creatine' ? 'check-creatine' : 'check-supplements',
-    log[field]
-  );
-  showToast(log[field] ? '✅ Marked done!' : 'Unchecked', 'success');
-
-  // Reload streaks
-  loadStreaks();
+  const pBadge = document.getElementById('streak-protein-badge');
+  if (pBadge) pBadge.style.display = proteinStreak > 0 ? 'flex' : 'none';
+  const pCount = document.getElementById('streak-protein');
+  if (pCount) pCount.textContent = proteinStreak;
 }
 
 /* ---------- Charts ---------- */
@@ -225,25 +154,15 @@ async function loadCharts() {
   const labels = dates.map(d => getDayName(d));
   const proteinData = [];
   const calData = [];
-  const weightData = [];
 
   for (const d of dates) {
     const n = await getDailyNutrition(d);
-    const l = await getDailyLog(d);
     proteinData.push(n.protein);
     calData.push(n.calories);
-    weightData.push(l.weight || null);
   }
-
-  // Filter null weights
-  const filteredWeights = weightData.filter(w => w !== null);
-  const weightLabels = labels.filter((_, i) => weightData[i] !== null);
 
   createProteinChart('chart-protein', labels, proteinData, (await getProfile())?.proteinGoal || 140);
   createCaloriesChart('chart-calories', labels, calData);
-  if (filteredWeights.length >= 2) {
-    createWeightChart('chart-weight', weightLabels, filteredWeights);
-  }
 }
 
 /* ---------- Recent Meals ---------- */

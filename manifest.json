@@ -1,7 +1,7 @@
 {
-  "name": "FitTracker AI",
+  "name": "FitTracker",
   "short_name": "FitTracker",
-  "description": "AI-Powered Personal Fitness Coach & Nutrition Tracker",
+  "description": "100% Offline Nutrition Tracker",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#0a0a0a",

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="FitTracker AI - Your Personal AI Fitness Coach & Nutrition Tracker">
+  <meta name="description" content="FitTracker - Your Personal Fitness Coach & Nutrition Tracker">
   <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FitTracker">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-  <title>FitTracker AI - Your AI Fitness Coach</title>
+  <title>FitTracker - Nutrition Tracker</title>
   <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/global.css">
@@ -257,34 +257,34 @@
 
   <!-- Hero / Landing -->
   <div class="onboarding-container" id="hero-section">
-    <div class="hero-badge">🤖 Powered by Google Gemini AI</div>
+    <div class="hero-badge">🔒 100% Offline & Private</div>
     <h1 class="hero-title">
-      Your <span class="gradient-text">AI Fitness</span> Coach
+      Your <span class="gradient-text">Nutrition</span> Tracker
     </h1>
     <p class="hero-subtitle">
-      Track nutrition, workouts, and progress with AI-powered insights. No account needed — your data stays on your device.
+      Track nutrition, calories, and macros with precision. No account needed — your data stays securely on your device.
     </p>
 
     <div class="feature-grid">
       <div class="feature-item">
         <div class="feature-icon">🍗</div>
-        <div class="feature-label">Food AI</div>
-        <div class="feature-desc">Instant macro analysis</div>
+        <div class="feature-label">Food Logs</div>
+        <div class="feature-desc">Track precise macros</div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">💪</div>
-        <div class="feature-label">Workout Log</div>
-        <div class="feature-desc">Track sets & PRs</div>
+        <div class="feature-icon">🍔</div>
+        <div class="feature-label">Cheat Meals</div>
+        <div class="feature-desc">Isolate cheat data</div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">📊</div>
         <div class="feature-label">Smart Reports</div>
-        <div class="feature-desc">Weekly AI analysis</div>
+        <div class="feature-desc">Monthly analysis</div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">🏆</div>
-        <div class="feature-label">Gamification</div>
-        <div class="feature-desc">Streaks & badges</div>
+        <div class="feature-icon">📄</div>
+        <div class="feature-label">PDF Export</div>
+        <div class="feature-desc">Export your data</div>
       </div>
     </div>
 
@@ -356,11 +356,7 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Gemini API Key (for AI features)</label>
-        <input type="password" class="neu-input" id="ob-api-key" placeholder="AIza...">
-        <span class="text-xs text-muted">Free at aistudio.google.com • Optional</span>
-      </div>
+
 
       <button class="cta-btn cta-primary" onclick="saveOnboarding()" style="margin-top:8px">
         🚀 Start Tracking
@@ -370,7 +366,6 @@
 
   <script src="js/db.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/ai.js"></script>
   <script>
     let selectedGoal = 'fat-loss';
 
@@ -417,11 +412,7 @@
 
       await saveProfile(profile);
 
-      // Save API key if provided
-      const apiKey = document.getElementById('ob-api-key').value.trim();
-      if (apiKey) {
-        setApiKey(apiKey);
-      }
+
 
       // Save initial weight to daily log
       if (profile.weight) {

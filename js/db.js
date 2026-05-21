@@ -1,9 +1,15 @@
 /* ==========================================
-   FitTracker AI - Data Layer (IndexedDB + LocalStorage)
+   FitTracker - Data Layer (IndexedDB + LocalStorage)
    All data persists locally - no backend needed
    ========================================== */
 
-const DB_NAME = 'FitTrackerDB';
+let DB_NAME = 'FitTrackerDB'; 
+// Set dynamically based on logged in user
+const currentUser = localStorage.getItem('ft_current_user');
+if (currentUser) {
+  DB_NAME = `FitTrackerDB_${currentUser}`;
+}
+
 const DB_VERSION = 1;
 let db = null;
 
@@ -16,8 +22,7 @@ const STORES = {
   EXERCISES: 'exercises',
   SUMMARIES: 'summaries',
   EXPENSES: 'expenses',
-  BADGES: 'badges',
-  CHAT_HISTORY: 'chatHistory'
+  BADGES: 'badges'
 };
 
 /* ---------- Initialize IndexedDB ---------- */

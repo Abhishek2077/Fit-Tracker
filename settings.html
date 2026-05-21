@@ -60,20 +60,15 @@
       </div>
     </section>
 
-    <!-- AI Settings -->
+    <!-- Account -->
     <section class="settings-section" data-animate>
-      <h3>🤖 AI Configuration</h3>
-      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="setting-name">Gemini API Key</div>
-          <span class="text-xs" id="api-status">❌ Not set</span>
+      <h3>👤 Account</h3>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-name">Log Out</div>
+          <div class="setting-desc">Sign out of this profile</div>
         </div>
-        <input type="text" class="neu-input" id="api-key-input" readonly style="font-size:0.8rem">
-        <div style="display:flex;gap:8px">
-          <input type="password" class="neu-input" id="api-key-new" placeholder="Paste new API key here" style="flex:1">
-          <button class="btn btn-primary btn-sm" onclick="saveApiKey()" id="btn-save-key">Save</button>
-        </div>
-        <p class="text-xs text-muted">Get a free key from <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent);text-decoration:underline">aistudio.google.com</a></p>
+        <button class="btn btn-sm btn-secondary" onclick="logout()" id="btn-logout">🚪 Log Out</button>
       </div>
     </section>
 
@@ -144,22 +139,25 @@
       <div class="text-sm text-muted" style="line-height:1.8">
         ✅ All data stored locally on your device<br>
         ✅ No cloud storage or external server<br>
-        ✅ No account or sign-up required<br>
-        ✅ Photos are processed then immediately deleted<br>
-        ✅ API key stored only in your browser<br>
+        ✅ Separate databases for each local user<br>
         ✅ Full data export/import at any time
       </div>
     </section>
 
     <div class="app-version">
-      FitTracker AI v1.0.0<br>
+      FitTracker v1.0.0<br>
       Made with ❤️ for fitness enthusiasts
     </div>
   </main>
 
   <script src="js/db.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/ai.js"></script>
   <script src="js/settings.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem('ft_current_user');
+      window.location.href = 'login.html';
+    }
+  </script>
 </body>
 </html>

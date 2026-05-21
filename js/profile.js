@@ -138,11 +138,43 @@ async function loadPrediction() {
   if (!profile) return;
 
   const container = document.getElementById('prediction-result');
-  container.innerHTML = '<div class="analyzing-spinner"><div class="spinner"></div><div class="text-sm text-muted">AI predicting...</div></div>';
+  container.innerHTML = '<div class="analyzing-spinner"><div class="spinner"></div><div class="text-sm text-muted">Calculating prediction...</div></div>';
 
   try {
     const allLogs = await dbGetAll(STORES.DAILY_LOGS);
-    const prediction = await predictBody(profile, allLogs);
+    
+    // Deterministic prediction
+    const currentWeight = profile.weight || 70;
+    const targetWeight = profile.targetWeight || 70;
+    const isLosing = targetWeight < currentWeight;
+    
+    // Simple math: assume 0.5kg/week (2kg/month) change
+    let predictedWeight1Month = isLosing ? currentWeight - 2 : currentWeight + 2;
+    let predictedWeight3Month = isLosing ? currentWeight - 6 : currentWeight + 6;
+    
+    // Cap at target weight
+    if (isLosing) {
+      predictedWeight1Month = Math.max(targetWeight, predictedWeight1Month);
+      predictedWeight3Month = Math.max(targetWeight, predictedWeight3Month);
+    } else {
+      predictedWeight1Month = Math.min(targetWeight, predictedWeight1Month);
+      predictedWeight3Month = Math.min(targetWeight, predictedWeight3Month);
+    }
+
+    const diff = Math.abs(currentWeight - targetWeight);
+    const monthsToTarget = diff / 2;
+    
+    let targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + Math.ceil(monthsToTarget));
+    
+    const prediction = {
+      currentWeight,
+      predictedWeight1Month: predictedWeight1Month.toFixed(1),
+      predictedWeight3Month: predictedWeight3Month.toFixed(1),
+      predictedTargetDate: diff < 0.5 ? 'Goal Reached!' : targetDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      confidence: allLogs.length > 14 ? 'high' : 'medium',
+      advice: "Consistent training and nutrition will keep you on track."
+    };
 
     container.innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;position:relative">
