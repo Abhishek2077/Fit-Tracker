@@ -116,30 +116,25 @@ async function loadProteinRemaining(profile) {
 
 /* ---------- Streaks ---------- */
 async function loadStreaks() {
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-    const l = allLogs.find(x => x.date === dateStr);
-    if (l && l.water >= 6) waterStreak++;
-    else break;
-  }
-
   // Calculate protein streak
   let proteinStreak = 0;
   const profile = await getProfile();
   const proteinGoal = profile?.proteinGoal || 140;
+  const today = new Date();
+  
   for (let i = 0; i < 60; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
     const nutrition = await getDailyNutrition(dateStr);
-    if (nutrition.protein >= proteinGoal * 0.9) proteinStreak++;
-    else break;
+    if (nutrition.protein >= proteinGoal * 0.9) {
+      proteinStreak++;
+    } else if (dateStr === getToday() && nutrition.protein < proteinGoal * 0.9) {
+      // Don't break streak if today isn't over
+    } else {
+      break;
+    }
   }
-
-  document.getElementById('streak-gym').textContent = gymStreak;
-  document.getElementById('streak-protein').textContent = proteinStreak;
-  document.getElementById('streak-water').textContent = waterStreak;
-  document.getElementById('streak-creatine').textContent = creatineStreak;
 
   // Highlight active streaks
   const pBadge = document.getElementById('streak-protein-badge');
