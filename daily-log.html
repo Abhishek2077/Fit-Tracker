@@ -14,7 +14,7 @@
   <!-- Page Header -->
   <header class="page-header">
     <h1 class="heading-lg">📝 Daily Log</h1>
-    <div class="badge badge-accent" id="today-date"></div>
+    <input type="date" class="badge badge-accent" id="log-date-picker" onchange="changeLogDate()" style="background: transparent; border: none; font-family: inherit; color: inherit; font-size: inherit; outline: none; cursor: pointer;">
   </header>
 
   <main class="page-content">
@@ -132,7 +132,7 @@
   <script src="js/app.js"></script>
   <script src="js/daily-log.js"></script>
   <script>
-    document.getElementById('today-date').textContent = formatDate(new Date().toISOString());
+    document.getElementById('log-date-picker').value = new Date().toISOString().split('T')[0];
   </script>
 </body>
 </html>

@@ -3,6 +3,14 @@
    Food logging, tracking, cheat meal marking
    ========================================== */
 
+/* ---------- Global Log Date ---------- */
+window.currentLogDate = new Date().toISOString().split('T')[0];
+
+function changeLogDate() {
+  window.currentLogDate = document.getElementById('log-date-picker').value;
+  loadTodaysMeals();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await initDB();
   renderBottomNav('log');
@@ -82,6 +90,7 @@ async function saveManualMeal() {
   rating = Math.max(1, Math.min(10, rating));
 
   await addMeal({
+    date: window.currentLogDate,
     description: desc,
     cheatItems: cheatFoodNames.join(', '),
     calories: cals,
@@ -125,6 +134,7 @@ function startFoodVoice() {
 /* ---------- Cheat Meal Quick Log ---------- */
 async function logCheatMeal(name, calories, protein, fat, sodium) {
   await addMeal({
+    date: window.currentLogDate,
     description: name,
     calories, protein, carbs: 0, fat, fiber: 0, sodium,
     rating: 3,
@@ -136,27 +146,40 @@ async function logCheatMeal(name, calories, protein, fat, sodium) {
 
 /* ---------- Today's Meals List ---------- */
 async function loadTodaysMeals() {
-  const meals = await getMealsByDate();
+  const meals = await getMealsByDate(window.currentLogDate);
   const container = document.getElementById('meals-list');
   if (!container) return;
 
   if (meals.length === 0) {
     container.innerHTML = '<p class="text-sm text-muted" style="text-align:center;padding:20px">No meals logged yet today</p>';
+    document.getElementById('today-total-cal').textContent = '0';
+    document.getElementById('today-total-protein').textContent = '0g';
     return;
   }
 
-  const nutrition = await getDailyNutrition();
+  const nutrition = await getDailyNutrition(window.currentLogDate);
   document.getElementById('today-total-cal').textContent = nutrition.calories;
   document.getElementById('today-total-protein').textContent = nutrition.protein + 'g';
 
-  container.innerHTML = meals.map(meal => `
-    <div class="meal-history-item ${meal.isCheat ? 'cheat' : ''}">
-      <span style="font-size:1.3rem">${meal.isCheat ? '🍔' : '🥗'}</span>
-      <div class="mhi-info">
-        <div class="mhi-name">${meal.description} ${meal.isCheat ? '<span class="cheat-meal-tag">CHEAT</span>' : ''}</div>
-        <div class="mhi-macros">P:${meal.protein}g • C:${meal.carbs}g • F:${meal.fat}g</div>
+  container.innerHTML = meals.slice().reverse().map(meal => `
+    <div class="meal-card ${meal.isCheat ? 'cheat' : ''}">
+      <div style="font-size:1.5rem">${meal.isCheat ? '🍔' : '🥗'}</div>
+      <div class="meal-info">
+        <div class="meal-name">${meal.description || 'Meal'} ${meal.isCheat ? '<span class="cheat-meal-tag">🔥 CHEAT</span>' : ''}</div>
+        <div class="meal-macros">P: ${meal.protein || 0}g • C: ${meal.carbs || 0}g • F: ${meal.fat || 0}g</div>
       </div>
-      <div class="mhi-cal">${meal.calories}</div>
+      <div style="text-align:right">
+        <div class="meal-cal">${meal.calories || 0}</div>
+        <div class="meal-time">kcal</div>
+        <button onclick="deleteMeal(${meal.id})" class="btn btn-sm btn-icon" style="color:var(--danger);font-size:0.8rem;padding:2px;margin-top:4px">🗑️</button>
+      </div>
     </div>
   `).join('');
+}
+
+async function deleteMeal(id) {
+  if (confirm('Delete this meal?')) {
+    await dbDelete(STORES.MEALS, id);
+    loadTodaysMeals();
+  }
 }
